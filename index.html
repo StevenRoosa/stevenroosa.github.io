@@ -72,6 +72,34 @@
       margin: 2.5rem 0 1rem;
       text-transform: uppercase;
     }
+    .link-grid {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .profile-link {
+      background: var(--paper);
+      border: 1px solid var(--rule);
+      color: inherit;
+      display: block;
+      padding: 1.2rem;
+      text-decoration: none;
+    }
+    .profile-link:hover strong,
+    .profile-link:focus strong {
+      color: var(--accent);
+    }
+    .profile-link strong {
+      display: block;
+      font-size: 1.1rem;
+      transition: color 160ms ease;
+    }
+    .profile-link span {
+      color: var(--muted);
+      display: block;
+      font-size: 0.95rem;
+      margin-top: 0.35rem;
+    }
     .article-link {
       background: var(--paper);
       border: 1px solid var(--rule);
@@ -122,7 +150,8 @@
     }
     @media (max-width: 780px) {
       .intro,
-      .article-link {
+      .article-link,
+      .link-grid {
         grid-template-columns: 1fr;
       }
       .signal {
@@ -140,6 +169,18 @@
       </div>
       <p class="signal">A small library of essays and diagrams for reasoning about AI systems with more precision.</p>
     </section>
+
+    <p class="section-heading">Links</p>
+    <div class="link-grid">
+      <a class="profile-link" href="https://www.linkedin.com/in/steven-roosa-7a39642/">
+        <strong>LinkedIn</strong>
+        <span>Professional profile</span>
+      </a>
+      <a class="profile-link" href="https://www.nortonrosefulbright.com/en-us/people/1016858">
+        <strong>Norton Rose Fulbright</strong>
+        <span>Firm biography</span>
+      </a>
+    </div>
 
     <p class="section-heading">Current Essay</p>
     <a class="article-link" href="semantic-trust-boundaries-for-agents/">
