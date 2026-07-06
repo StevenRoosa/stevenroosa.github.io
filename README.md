@@ -1,28 +1,20 @@
-# Trust Boundaries and Core Reasoning
+# Steven Roosa GitHub Pages Site
 
-Static GitHub Pages version of `Trust Boundaries and Core Reasoning.odt`.
-
-## Publish to an account GitHub Pages site
-
-Create a GitHub repository named:
+Static GitHub Pages site published at:
 
 ```text
-YOUR-GITHUB-USERNAME.github.io
+https://stevenroosa.github.io/
 ```
 
-Then push this directory to that repository:
-
-```sh
-git init
-git add .
-git commit -m "Publish GitHub Pages site"
-git branch -M main
-git remote add origin git@github.com:YOUR-GITHUB-USERNAME/YOUR-GITHUB-USERNAME.github.io.git
-git push -u origin main
-```
-
-After GitHub Pages finishes publishing, the site will be available at:
+Current article:
 
 ```text
-https://YOUR-GITHUB-USERNAME.github.io/
+https://stevenroosa.github.io/semantic-trust-boundaries-for-agents/
 ```
+
+## Structure
+
+- `index.html` is the homepage.
+- `semantic-trust-boundaries-for-agents/` contains the current article and its diagram.
+
+Additional pages can be added as new folders with their own `index.html` files.
