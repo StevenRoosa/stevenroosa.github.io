@@ -263,7 +263,7 @@ governance dead zone. Because, if no traditional security boundary has
 been broken (authentication, read-write permissions, etc.) is a
 reliability failure (i.e., an unwanted AI output) even InfoSec’s
 responsibility? Maybe “yes” for bad tool invocation, but “no” for
-“wrong” answers? At present, these questions do not have agreed up
+“wrong” answers? At present, these questions do not have agreed-upon
 answers.</p>
 <h2>Context Uncontrolled</h2>
 <p>In any event, irrespective of where responsibility ultimately may
@@ -275,7 +275,7 @@ include retrieved documents, static prompts, memory, outputs from prior
 AI calls, dynamic prompts, and prompt assembly materials. </p>
 <p>The contours of the problem, however, also help us draw the blueprint
 for the solution. A number of context variables which cause unwanted AI
-outputs have been identified and studied in details through the
+outputs have been identified and studied in detail through the
 collective efforts of university researchers, the frontier LLM labs, and
 various AI security vendors. These context variables include, among
 other things: the length of admitted context, the number of tasks given
@@ -296,7 +296,7 @@ strictly governed and gated.</p>
 <p>Below are some of the problematic context variables, together with
 some helpful <a
 href="https://en.wikipedia.org/wiki/Chengyu">Chengyu</a>, and ideas for
-potential ways to treat problematic context dimension a governed trust
+potential ways to treat problematic context dimensions as governed trust
 boundaries.</p>
 <h3>Large Context</h3>
 <p class="epigraph"><strong>Needle in a haystack... but the haystack
@@ -321,7 +321,7 @@ also make it small. Make it complex, but it also must be simple.”</p>
 <p><em>Controls</em>: In the agentic orchestrator, or any other module
 that is allowed to call LLM endpoints, one can, and should, use
 deterministic code to limit each LLM endpoint call to as few tasks as
-possible, in while still achieving the processing goals. For example,
+possible, while still achieving the processing goals. For example,
 for a system that does ideation, research, and writing, each of those
 tasks are probably best suited as either separate AI calls, or possibly
 entire separate workflows. This approach to structure is a control that
@@ -330,7 +330,7 @@ architecture.</p>
 <h3>Deep Co-mingling of Instructions and Data</h3>
 <p class="epigraph">Everything is soup.</p>
 <p><em>Problem</em>: One of the inescapable issues with LLM-powered
-agents is that, at some level, instructions and data musts be combined.
+agents is that, at some level, instructions and data must be combined.
 However, that doesn’t mean they need to be deeply intertwined like
 Spaghetti. In fact, the spaghetti approach is likely to confuse the LLM
 endpoint so that data ends up being treated as instructions and
@@ -394,7 +394,7 @@ obscure, or up-promote, or down-promote findings. Tentative AI responses
 might be lost in coarse or binary JSON categories.</p>
 <p><em>Controls</em>: JSON is indispensable in agentic development, but
 care should be taken in crafting schemas so that classification does not
-end up distorting model ouputs. </p>
+end up distorting model outputs. </p>
 <h3>Using AI When Deterministic Code is Reliable</h3>
 <p class="epigraph">Hiring a poet to count beans.</p>
 <p><em>Problem</em>: Because LLMs are so highly performant and are
@@ -411,9 +411,9 @@ the reliability of that particular work, but will also decrease the
 token burn rate of the system.</p>
 <h2>Conclusion: A Beginning</h2>
 <p>Although hardening the trust boundaries around admitted context is
-essential, is is likely far from sufficient, especially for sensitive
+essential, it is likely far from sufficient, especially for sensitive
 use-cases. Other trust boundaries in agentic systems include the point
-at where the System ingests AI outputs. Here the approach works in
+at which the system ingests AI outputs. Here the approach works in
 reverse: just as the reasoning space (the LLM endpoint) is highly
 protected space in an agentic system, so is the rest of the agentic
 system as against AI outputs. AI outputs need to be evaluated for proper
@@ -423,7 +423,7 @@ boundary from the observational tools that evaluate the effectiveness of
 those controls. Trust boundary controls are not perfect and are
 generally subject to improvement. Observational tools help to detect
 when controls fail as well as provide ideas for improvement.</p>
-<p>Trust boundaries for AI outputs and observational posts will be the
+<p>Trust boundaries for AI outputs and observational tools will be the
 subject of separate posts.</p>
 <h2 id="useful-resources">Useful Resources</h2>
 <h3
@@ -486,7 +486,7 @@ Injection</em>. OWASP. (<a
 href="https://genai.owasp.org/llmrisk/llm01-prompt-injection/">genai.owasp.org</a>)</p>
 <p>OWASP GenAI Security Project. (2025). <em>LLM05:2025 Improper Output
 Handling</em>. OWASP. (<a
-href="https://genai.owasp.org/llmrisk/llm05-supply-chain-vulnerabilities/">genai.owasp.org</a>)</p>
+href="https://genai.owasp.org/llmrisk/llm05-improper-output-handling/">genai.owasp.org</a>)</p>
 <p>OWASP GenAI Security Project. (2025). <em>LLM09:2025
 Misinformation</em>. OWASP. (<a
 href="https://genai.owasp.org/llm-top-10/">genai.owasp.org</a>)</p>
