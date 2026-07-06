@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Trust Boundaries and Core Reasoning</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f8f7f3;
+      --paper: #fffefa;
+      --ink: #20211d;
+      --muted: #62665c;
+      --rule: #d7d3c8;
+      --accent: #9b4f2f;
+      --accent-dark: #64321f;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    html {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+      font-size: 18px;
+      line-height: 1.65;
+      text-rendering: optimizeLegibility;
+    }
+    body {
+      margin: 0;
+    }
+    article {
+      background: var(--paper);
+      border-left: 1px solid var(--rule);
+      border-right: 1px solid var(--rule);
+      margin: 0 auto;
+      max-width: 820px;
+      min-height: 100vh;
+      padding: clamp(28px, 6vw, 76px);
+    }
+    h1, h2, h3 {
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      letter-spacing: 0;
+      line-height: 1.15;
+    }
+    h1 {
+      border-bottom: 1px solid var(--rule);
+      font-size: clamp(2rem, 8vw, 4.5rem);
+      margin: 0 0 2.5rem;
+      padding-bottom: 1.25rem;
+    }
+    h2 {
+      color: var(--accent-dark);
+      font-size: clamp(1.45rem, 4vw, 2.15rem);
+      margin: 3rem 0 1rem;
+    }
+    h3 {
+      color: var(--accent-dark);
+      font-size: 1.15rem;
+      margin: 2rem 0 0.5rem;
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: var(--accent-dark);
+      text-underline-offset: 0.18em;
+    }
+    .epigraph {
+      color: var(--muted);
+      font-style: italic;
+      margin-top: 0.25rem;
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    a:visited {
+      color: var(--accent);
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    @media (max-width: 600px) {
+      html {
+        font-size: 16px;
+      }
+      article {
+        border: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+<article>
+<h1>Semantic Controls to Harden Agentic Reasoning</h1>
+<h2>Hardening What Against Whom?</h2>
+<p>Information security traditionally guards against internal and
+external actors accessing data or other resources without authorization.
+Traditional approaches involve: limiting access, restricting
+permissions, and tightly controlling how identity is determined.
+Implicit in this model is the notion that internal and external actors
+can act arbitrarily and so steps must be taken to secure systems against
+the (large) subset of those arbitrary actions that might be unwanted,
+dangerous, malicious, etc.</p>
+<p>But what happens when the discretionary “actor” is now a core
+component of the system itself? Previously, systems consisted entirely
+of “deterministic” code that could theoretically be constrained with
+precision. Now, with agentic systems, a probabilistic reasoning “actor”
+(AI, an LLM model endpoint) is the beating heart of the system itself.
+Under this paradigm, this core AI system component may attempt to invoke
+tools when it should not, generate inaccurate or made-up information, or
+generate data in a format not contemplated by the system. Although these
+unwanted system behaviors may occasionally be the result of malicious
+actors, they are, more often than not, simply caused by a particular set
+of non-malicious AI inputs having unintended and unwanted AI
+outputs.</p>
+<p>The risk of system unreliability, interestingly, has caused a
+governance dead zone. Because, if no traditional security boundary has
+been broken (authentication, read-write permissions, etc.) is a
+reliability failure (i.e., an unwanted AI output) even InfoSec’s
+responsibility? Maybe “yes” for bad tool invocation, but “no” for
+“wrong” answers? At present, these questions do not have agreed up
+answers.</p>
+<h2>Context Uncontrolled</h2>
+<p>In any event, irrespective of where responsibility ultimately may
+lie, the bigger problem is that developers generally do not treat AI
+inputs or “context” as a governed boundary or threshold. “Context”
+includes those things that enter the reasoning space of an agent (i.e.,
+are transmitted to an AI/LLM endpoint). For example, “context” may
+include retrieved documents, static prompts, memory, outputs from prior
+AI calls, dynamic prompts, and prompt assembly materials. </p>
+<p>The contours of the problem, however, also help us draw the blueprint
+for the solution. A number of context variables which cause unwanted AI
+outputs have been identified and studied in details through the
+collective efforts of university researchers, the frontier LLM labs, and
+various AI security vendors. These context variables include, among
+other things: the length of admitted context, the number of tasks given
+to the LLM, the nature of the tasks given to the LLM (e.g., whether
+those tasks are conflicting), the extent to which data and instructions
+are deeply commingled, and the overall complexity of the materials that
+comprise the AI inputs. ALL of these “semantic trust boundaries” can be
+controlled, shaped, and inspected using deterministic code that is added
+to an agentic software harness.</p>
+<p>For AI agents, the answer to the question “Securing What Against
+Whom” means securing the core reasoning function of the agent (the
+AI/LLM model endpoint) against the various types of context generated by
+the system (or provided by the user) that trigger the failure modes
+noted above. Stated differently, the reasoning area of the AI agent is
+sacred ground and highly consequential, and so admission to it should be
+strictly governed and gated.</p>
+<h2>Context Controlled</h2>
+<p>Below are some of the problematic context variables, together with
+some helpful <a
+href="https://en.wikipedia.org/wiki/Chengyu">Chengyu</a>, and ideas for
+potential ways to treat problematic context dimension a governed trust
+boundaries.</p>
+<h3>Large Context</h3>
+<p class="epigraph"><strong>Needle in a haystack... but the haystack
+talks.</strong></p>
+<p><em>Problem</em>: If admitted context is within the context window of
+the model endpoint, it can still be too big for the AI endpoint to
+successfully reason across. Although it is often convenient for
+developers to<br />
+“send all the context at once,” large admitted context can cause LLM
+endpoints to lose focus, miss key facts, or become confused. </p>
+<p><em>Controls</em>: It is useful to use deterministic code to enforce
+a strict upper limit to context size and to break apart those processing
+pieces that can be done separately. If the larger picture is needed for
+the processing, there are often ways to provide the AI endpoint with a
+dramatically smaller problem statement or map, rather than all possible
+context. </p>
+<h3>Conflicting Task Modes</h3>
+<p class="epigraph">Too many hats, but only one head.</p>
+<p><em>Problem</em>: LLMs, like humans, do not do their best work when
+given competing task modes in the same assignment. “Make it big, but
+also make it small. Make it complex, but it also must be simple.”</p>
+<p><em>Controls</em>: In the agentic orchestrator, or any other module
+that is allowed to call LLM endpoints, one can, and should, use
+deterministic code to limit each LLM endpoint call to as few tasks as
+possible, in while still achieving the processing goals. For example,
+for a system that does ideation, research, and writing, each of those
+tasks are probably best suited as either separate AI calls, or possibly
+entire separate workflows. This approach to structure is a control that
+can live as deterministic code within the agent and as part of agent
+architecture.</p>
+<h3>Deep Co-mingling of Instructions and Data</h3>
+<p class="epigraph">Everything is soup.</p>
+<p><em>Problem</em>: One of the inescapable issues with LLM-powered
+agents is that, at some level, instructions and data musts be combined.
+However, that doesn’t mean they need to be deeply intertwined like
+Spaghetti. In fact, the spaghetti approach is likely to confuse the LLM
+endpoint so that data ends up being treated as instructions and
+instructions as data. The more context resembles spaghetti, the more
+injectable that context is.</p>
+<p><em>Controls</em>: Code modules that are allowed to assemble context
+should uniformly ensure that there is a clean separation between
+instructions and data (a typical approach is to have instructions at the
+beginning, followed by data), and that both are clearly labeled. This of
+course doesn’t guarantee that the LLM endpoint will keep them straight,
+but it will lower the incidence of instruction-data confusion. This is a
+control that is instantiated with deterministic code.</p>
+<h3>Overall Complexity</h3>
+<p class="epigraph">The map becomes the maze.</p>
+<p><em>Problem</em>: Complex context is more likely to confuse LLMs.
+Although there is some overlap between this variable and some others
+(such as context length and conflicting task modes), it still deserves
+independent status because some types of complexity are not otherwise
+caught. For example, context that involves many different data types or
+multiple data structures may confuse the LLM. </p>
+<p><em>Controls</em>: Again, managing complexity is primarily a feature
+of architecture and ensuring that modules are carefully structured to
+control the number of data types and data structures that are sent to
+LLM endpoints.</p>
+<h3>Authority Ambiguity</h3>
+<p class="epigraph">Who’s in charge?</p>
+<p><em>Problem</em>: Many times context will lack a clear hierarchy for
+resolving in-context authority conflicts. For example, within a single
+piece of admitted context may live system prompts, user instructions,
+dynamically created prompts, and examples, but no statement about which
+is authoritative over the others, for purposes of reasoning.</p>
+<p><em>Controls</em>: Modules that execute prompt assembly should
+include clear instructions, including hierarchies of authority,
+labeling, and precedence where relevant.</p>
+<h3>Compression Loss</h3>
+<p class="epigraph">The summary ate the caveats.</p>
+<p><em>Problem</em>: In order to keep context within model ceilings,
+many agent harnesses will use compression: summaries or distillations of
+prior materials, memory, conversations, or documents. The problem arises
+when compression loses critical instructions that establish hierarchy of
+authority, reasoning rules, or limitations on scope. </p>
+<p><em>Controls</em>: The solution is to ensure authoritative material,
+instructions, and limitations are assigned a retention status that is
+deterministically preserved (don’t rely on the AI to do it) in the event
+of compression. </p>
+<h3>Semantic Drift Across Steps</h3>
+<p class="epigraph">Whisper down the alley... but with tokens and at
+scale.</p>
+<p><em>Problem</em>: In a multi-step workflow that carries over inputs
+and outputs across separate calls to the LLM endpoint may cause semantic
+boundaries to blur. The tentative becomes certain. Description becomes
+prescription. Or, a narrow task becomes a broad mandate. </p>
+<p><em>Controls</em>: The system should preserve provenance and use
+“step contracts” for each turn of the workflow, so explicit instruction
+grounding the AI (“summarize only”, “do not classify”, or “extract
+claims but do not make your own conclusions.”)</p>
+<h3>Schema Overconfidence</h3>
+<p class="epigraph">The JSON made me do it...</p>
+<p><em>Problem</em>: JSON schema semantics (e.g. {“risk”: “high”}) may
+obscure, or up-promote, or down-promote findings. Tentative AI responses
+might be lost in coarse or binary JSON categories.</p>
+<p><em>Controls</em>: JSON is indispensable in agentic development, but
+care should be taken in crafting schemas so that classification does not
+end up distorting model ouputs. </p>
+<h3>Using AI When Deterministic Code is Reliable</h3>
+<p class="epigraph">Hiring a poet to count beans.</p>
+<p><em>Problem</em>: Because LLMs are so highly performant and are
+<em>generally</em> able to carry out a wide variety of quantitative and
+qualitative analysis, it is tempting to <em>rely</em> on LLMs for such
+work. However, even a 1% failure rate, in a sensitive use-case
+(healthcare, financial services, accounting) can be catastrophic.</p>
+<p><em>Controls</em>: If the work to be done involves computation or
+other qualitative work/analysis and can be done with essentially 100%
+reliability by deterministic code (outputs not generated by an AI) then
+it is much better to take that work “off the plate” of the LLM and have
+it scoped to be completed by deterministic code. This not only increases
+the reliability of that particular work, but will also decrease the
+token burn rate of the system.</p>
+<h2>Conclusion: A Beginning</h2>
+<p>Although hardening the trust boundaries around admitted context is
+essential, is is likely far from sufficient, especially for sensitive
+use-cases. Other trust boundaries in agentic systems include the point
+at where the System ingests AI outputs. Here the approach works in
+reverse: just as the reasoning space (the LLM endpoint) is highly
+protected space in an agentic system, so is the rest of the agentic
+system as against AI outputs. AI outputs need to be evaluated for proper
+semantics, syntax, and safety.</p>
+<p>It is also important to separate the controls that guard the trust
+boundary from the observational tools that evaluate the effectiveness of
+those controls. Trust boundary controls are not perfect and are
+generally subject to improvement. Observational tools help to detect
+when controls fail as well as provide ideas for improvement.</p>
+<p>Trust boundaries for AI outputs and observational posts will be the
+subject of separate posts.</p>
+<h2 id="useful-resources">Useful Resources</h2>
+<h3
+id="context-performance-context-rot-and-reasoning-degradation">Context
+performance, context rot, and reasoning degradation</h3>
+<p>Anthropic. (n.d.). <em>Reduce hallucinations</em>. Claude Platform
+Documentation. Accessed June 30, 2026. (<a
+href="https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/reduce-hallucinations">platform.claude.com</a>)</p>
+<p>Anthropic Applied AI Team. (September 29, 2025). <em>Effective
+context engineering for AI agents</em>. Anthropic Engineering. (<a
+href="https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents">anthropic.com</a>)</p>
+<p>Hong, Kelly; Troynikov, Anton; &amp; Huber, Jeff. (July 14, 2025).
+<em>Context Rot: How Increasing Input Tokens Impacts LLM
+Performance</em>. Chroma Research. (<a
+href="https://www.trychroma.com/research/context-rot">trychroma.com</a>)</p>
+<p>Laban, Philippe; Hayashi, Hiroaki; Zhou, Yingbo; &amp; Neville,
+Jennifer. (May 9, 2025). <em>LLMs get lost in multi-turn
+conversation</em>. arXiv. (<a
+href="https://arxiv.org/abs/2505.06120">arxiv.org</a>)</p>
+<p>Li, Zihao; Yi, Weiwei; &amp; Chen, Jiahong. (July 2026). <em>Accuracy
+paradox: Addressing epistemic, manipulative, and societal risks of
+hallucination in AI governance</em>. Computer Law &amp; Security Review,
+61, Article 106311. (<a
+href="https://www.sciencedirect.com/science/article/pii/S2212473X26000520">sciencedirect.com</a>)</p>
+<p>OpenAI. (September 5, 2025). <em>Why language models
+hallucinate</em>. OpenAI Research. (<a
+href="https://openai.com/index/why-language-models-hallucinate/">openai.com</a>)</p>
+<p>Tam, Zhi Rui; Wu, Cheng-Kuang; Tsai, Yi-Lin; Lin, Chieh-Yen; Lee,
+Hung-yi; &amp; Chen, Yun-Nung. (2024). <em>Let Me Speak Freely? A study
+on the impact of format restrictions on large language model
+performance</em>. Proceedings of the 2024 Conference on Empirical
+Methods in Natural Language Processing: Industry Track, 1218–1236. (<a
+href="https://aclanthology.org/2024.emnlp-industry.91/">aclanthology.org</a>)</p>
+<p>OpenAI. (December 18, 2025). <em>Model Spec</em>. OpenAI. (<a
+href="https://model-spec.openai.com/">model-spec.openai.com</a>)</p>
+<h3
+id="prompt-injection-instructiondata-confusion-and-adversarial-context"><strong>Prompt
+injection, instruction/data confusion, and adversarial
+context</strong></h3>
+<p>Liu, Yupei; Jia, Yuqi; Geng, Runpeng; Jia, Jinyuan; &amp; Gong, Neil
+Zhenqiang. (2024). <em>Formalizing and benchmarking prompt injection
+attacks and defenses</em>. Proceedings of the 33rd USENIX Security
+Symposium, 1831–1847. (<a
+href="https://pure.psu.edu/en/publications/formalizing-and-benchmarking-prompt-injection-attacks-and-defense/">pure.psu.edu</a>)</p>
+<p>Schulhoff, Sander, et al. (June 6, 2024). <em>The Prompt Report: A
+systematic survey of prompting techniques</em>. arXiv. (<a
+href="https://arxiv.org/abs/2406.06608">arxiv.org</a>)</p>
+<p>Shen, Xinyue; Chen, Zeyuan; Backes, Michael; Shen, Yun; &amp; Zhang,
+Yang. (2024). <em>“Do Anything Now”: Characterizing and evaluating
+in-the-wild jailbreak prompts on large language models</em>. Proceedings
+of the ACM Conference on Computer and Communications Security. (<a
+href="https://dl.acm.org/doi/10.1145/3658644.3670388">dl.acm.org</a>)</p>
+<h3 id="owasp-ai-llm-and-agentic-system-security-sources">OWASP AI, LLM,
+and agentic-system security sources</h3>
+<p>OWASP Foundation. (November 18, 2024). <em>OWASP Top 10 for LLM
+Applications 2025</em>. OWASP GenAI Security Project. (<a
+href="https://owasp.org/www-project-top-10-for-large-language-model-applications/assets/PDF/OWASP-Top-10-for-LLMs-v2025.pdf">owasp.org</a>)</p>
+<p>OWASP GenAI Security Project. (2025). <em>LLM01:2025 Prompt
+Injection</em>. OWASP. (<a
+href="https://genai.owasp.org/llmrisk/llm01-prompt-injection/">genai.owasp.org</a>)</p>
+<p>OWASP GenAI Security Project. (2025). <em>LLM05:2025 Improper Output
+Handling</em>. OWASP. (<a
+href="https://genai.owasp.org/llmrisk/llm05-supply-chain-vulnerabilities/">genai.owasp.org</a>)</p>
+<p>OWASP GenAI Security Project. (2025). <em>LLM09:2025
+Misinformation</em>. OWASP. (<a
+href="https://genai.owasp.org/llm-top-10/">genai.owasp.org</a>)</p>
+<p>OWASP GenAI Security Project. (February 17, 2025). <em>Agentic AI —
+Threats and Mitigations</em>. OWASP. (<a
+href="https://genai.owasp.org/resource/agentic-ai-threats-and-mitigations/">genai.owasp.org</a>)</p>
+<p>OWASP GenAI Security Project. (April 23, 2025). <em>Multi-Agentic
+System Threat Modeling Guide v1.0</em>. OWASP. (<a
+href="https://genai.owasp.org/resource/multi-agentic-system-threat-modeling-guide-v1-0/">genai.owasp.org</a>)</p>
+<p>OWASP GenAI Security Project. (July 27, 2025). <em>Securing Agentic
+Applications Guide 1.0</em>. OWASP. (<a
+href="https://genai.owasp.org/resource/securing-agentic-applications-guide-1-0/">genai.owasp.org</a>)</p>
+<h3
+id="nist-government-and-standards-sources-for-ai-trust-boundaries-and-governance">NIST,
+government, and standards sources for AI trust boundaries and
+governance</h3>
+<p>Autio, C.; Schwartz, R.; Eikermann, M.; Gregory, R.; &amp; others.
+(July 26, 2024). <em>Artificial Intelligence Risk Management Framework:
+Generative Artificial Intelligence Profile</em>. NIST AI 600-1. National
+Institute of Standards and Technology. (<a
+href="https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-generative-artificial-intelligence">nist.gov</a>)</p>
+<p>Tabassi, Elham, et al. (January 26, 2023). <em>Artificial
+Intelligence Risk Management Framework (AI RMF 1.0)</em>. NIST AI 100-1.
+National Institute of Standards and Technology. (<a
+href="https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10">nist.gov</a>)</p>
+<h3
+id="other-useful-trust-boundary-containment-and-ai-system-governance-sources">Other
+useful trust-boundary, containment, and AI-system governance
+sources</h3>
+<p>Anthropic. (May 25, 2026). <em>How we contain Claude across
+products</em>. Anthropic Engineering. (<a
+href="https://www.anthropic.com/engineering/how-we-contain-claude">anthropic.com</a>)</p>
+<p>Cloud Security Alliance. (February 6, 2025). <em>Agentic AI Threat
+Modeling Framework: MAESTRO</em>. Cloud Security Alliance. (<a
+href="https://cloudsecurityalliance.org/blog/2025/02/06/agentic-ai-threat-modeling-framework-maestro">cloudsecurityalliance.org</a>)</p>
+<p>MITRE. (n.d.). <em>MITRE ATLAS™: Adversarial Threat Landscape for
+Artificial-Intelligence Systems</em>. MITRE. Accessed July 6, 2026. (<a
+href="https://atlas.mitre.org/">atlas.mitre.org</a>)</p>
+</article>
+</body>
+</html>
