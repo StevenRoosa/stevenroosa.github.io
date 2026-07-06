@@ -81,6 +81,25 @@
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
       white-space: pre;
     }
+    .visual {
+      border-bottom: 1px solid var(--rule);
+      border-top: 1px solid var(--rule);
+      margin: 2rem 0 2.5rem;
+      padding: 1.25rem 0;
+    }
+    .visual img {
+      background: var(--bg);
+      display: block;
+      height: auto;
+      width: 100%;
+    }
+    .visual figcaption {
+      color: var(--muted);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.9rem;
+      line-height: 1.45;
+      margin-top: 0.85rem;
+    }
     strong { font-weight: 750; }
     @media print {
       html { background-color: white; }
@@ -146,6 +165,11 @@ the distribution matters more than an isolated score. If most cosine
 scores are tightly clustered, a small score difference may be
 meaningful. If scores are widely scattered, the same difference may be
 ordinary noise.</p>
+<figure class="visual">
+<img src="distribution-histogram.svg" alt="Histogram showing a cluster of ordinary retrieval scores and a highlighted upper-tail score." />
+<figcaption>A raw metric becomes more useful when it is compared to a
+baseline distribution, cohort, or time window.</figcaption>
+</figure>
 <p>Math progression in valid Python:</p>
 <pre><code class="language-python">from collections import Counter
 
@@ -170,6 +194,12 @@ approximately normal, standard deviation and z-scores become easier to
 interpret. But do not assume normality just because a graph looks
 smooth. Check for skew, multiple peaks, heavy tails, and known process
 changes.</p>
+<figure class="visual">
+<img src="normal-zscore.svg" alt="Normal distribution curve labeled with mean, standard deviations, and a z equals 2 marker." />
+<figcaption>Standard deviation gives operational distance a scale:
+z-scores express how far a point sits from the mean in standard
+deviation units.</figcaption>
+</figure>
 <p>Math progression in valid Python:</p>
 <pre><code class="language-python">from math import exp, pi, sqrt
 
@@ -440,6 +470,12 @@ variation.</p>
 citation failures, tool retries, or retrieval insufficiency suddenly
 move beyond historical process limits, treat it as a possible system
 change rather than ordinary noise.</p>
+<figure class="visual">
+<img src="control-limits.svg" alt="Control chart showing a metric over time, upper and lower control limits, and one out-of-control point." />
+<figcaption>Control limits are useful for agent operations because they
+separate ordinary process variation from signals that deserve
+investigation.</figcaption>
+</figure>
 <p>Math progression in valid Python:</p>
 <pre><code class="language-python">historical_failure_rates = [0.02, 0.025, 0.018, 0.022, 0.019, 0.024]
 current_failure_rate = 0.071

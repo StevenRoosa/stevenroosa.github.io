@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 520" role="img" aria-labelledby="title desc">
+  <title id="title">Distribution view of retrieval scores</title>
+  <desc id="desc">A histogram showing clustered retrieval scores and one highlighted score in the upper tail.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#2f5d62"/>
+    </marker>
+    <style>
+      .bg { fill: #f8f7f3; }
+      .panel { fill: #fffefa; stroke: #d7d3c8; stroke-width: 2; }
+      .axis { stroke: #20211d; stroke-width: 2; }
+      .grid { stroke: #d7d3c8; stroke-width: 1; }
+      .bar { fill: #dceae7; stroke: #88aaa6; stroke-width: 2; }
+      .bar-hi { fill: #f4d5b6; stroke: #d79a58; stroke-width: 2; }
+      .line { stroke: #9b4f2f; stroke-width: 4; }
+      .arrow { fill: none; stroke: #2f5d62; stroke-width: 3; marker-end: url(#arrow); }
+      .title { fill: #20211d; font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 30px; font-weight: 750; }
+      .label { fill: #20211d; font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 18px; font-weight: 650; }
+      .small { fill: #62665c; font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 16px; }
+    </style>
+  </defs>
+  <rect class="bg" width="920" height="520"/>
+  <rect class="panel" x="42" y="38" width="836" height="444" rx="8"/>
+  <text class="title" x="84" y="90">A score becomes meaningful inside a distribution</text>
+  <text class="small" x="84" y="122">The same raw score can be ordinary or surprising depending on the baseline cohort.</text>
+
+  <line class="axis" x1="104" y1="404" x2="790" y2="404"/>
+  <line class="axis" x1="104" y1="404" x2="104" y2="170"/>
+  <line class="grid" x1="104" y1="340" x2="790" y2="340"/>
+  <line class="grid" x1="104" y1="276" x2="790" y2="276"/>
+  <line class="grid" x1="104" y1="212" x2="790" y2="212"/>
+
+  <rect class="bar" x="142" y="350" width="62" height="54"/>
+  <rect class="bar" x="220" y="302" width="62" height="102"/>
+  <rect class="bar" x="298" y="236" width="62" height="168"/>
+  <rect class="bar" x="376" y="196" width="62" height="208"/>
+  <rect class="bar" x="454" y="224" width="62" height="180"/>
+  <rect class="bar" x="532" y="288" width="62" height="116"/>
+  <rect class="bar-hi" x="610" y="346" width="62" height="58"/>
+  <rect class="bar-hi" x="688" y="376" width="62" height="28"/>
+
+  <line class="line" x1="641" y1="164" x2="641" y2="404"/>
+  <path class="arrow" d="M 760 192 C 722 178, 686 166, 648 166"/>
+  <text class="label" x="684" y="146">score of interest</text>
+  <text class="small" x="612" y="432">upper tail</text>
+  <text class="small" x="328" y="432">typical cluster</text>
+  <text class="label" x="360" y="468">Retrieval score bins</text>
+  <text class="label" transform="translate(72 316) rotate(-90)">Count</text>
+</svg>
