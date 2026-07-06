@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Steven Roosa</title>
+  <title>The Trust Boundary Workbench</title>
   <style>
     :root {
       --bg: #f8f7f3;
@@ -32,37 +32,37 @@
       margin: 0 auto;
       max-width: 1120px;
       min-height: 100vh;
-      padding: clamp(28px, 6vw, 72px);
+      padding: 0 clamp(28px, 6vw, 72px) clamp(28px, 6vw, 72px);
     }
     .intro {
-      border-bottom: 1px solid var(--rule);
-      display: grid;
-      gap: 2rem;
-      grid-template-columns: minmax(0, 1fr) minmax(260px, 420px);
-      padding-bottom: clamp(2rem, 5vw, 4rem);
+      background-image:
+        linear-gradient(180deg, rgba(8, 15, 18, 0) 72%, var(--bg) 100%),
+        linear-gradient(90deg, rgba(8, 15, 18, 0.9) 0%, rgba(8, 15, 18, 0.72) 39%, rgba(8, 15, 18, 0.08) 100%),
+        url("github io landing.png");
+      background-position: center;
+      background-size: cover;
+      color: #fffefa;
+      margin-left: calc(50% - 50vw);
+      margin-right: calc(50% - 50vw);
+      min-height: min(76vh, 720px);
+      padding: clamp(36px, 8vw, 96px) max(clamp(28px, 6vw, 72px), calc((100vw - 1120px) / 2 + clamp(28px, 6vw, 72px)));
+      position: relative;
     }
     h1 {
       font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
-      font-size: clamp(3rem, 10vw, 7rem);
+      font-size: clamp(2.6rem, 7vw, 6rem);
       font-weight: 700;
       letter-spacing: 0;
-      line-height: 0.95;
+      line-height: 1;
       margin: 0;
+      max-width: 760px;
     }
     .dek {
-      color: var(--muted);
+      color: rgba(255, 254, 250, 0.84);
       font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
-      font-size: clamp(1.25rem, 3vw, 1.8rem);
+      font-size: clamp(1.18rem, 2.4vw, 1.7rem);
       margin: 1.5rem 0 0;
-      max-width: 780px;
-    }
-    .signal {
-      align-self: end;
-      border-left: 4px solid var(--accent);
-      color: var(--muted);
-      font-size: 1rem;
-      margin: 0;
-      padding-left: 1rem;
+      max-width: 680px;
     }
     .section-heading {
       color: var(--accent);
@@ -161,8 +161,12 @@
       .link-grid {
         grid-template-columns: 1fr;
       }
-      .signal {
-        align-self: start;
+      .intro {
+        background-image:
+          linear-gradient(180deg, rgba(8, 15, 18, 0) 68%, var(--bg) 100%),
+          linear-gradient(90deg, rgba(8, 15, 18, 0.9) 0%, rgba(8, 15, 18, 0.58) 100%),
+          url("github io landing.png");
+        min-height: 560px;
       }
     }
   </style>
@@ -171,10 +175,9 @@
   <main>
     <section class="intro" aria-labelledby="site-title">
       <div>
-        <h1 id="site-title">Steven Roosa</h1>
-        <p class="dek">Writing on AI governance, security architecture, and the trust boundaries that shape agentic systems.</p>
+        <h1 id="site-title">The Trust Boundary Workbench</h1>
+        <p class="dek">Practical field notes on agentic AI systems, control surfaces, and bounded AI workflows.</p>
       </div>
-      <p class="signal">A small library of essays and diagrams for reasoning about AI systems with more precision.</p>
     </section>
 
     <p class="section-heading">Links</p>
