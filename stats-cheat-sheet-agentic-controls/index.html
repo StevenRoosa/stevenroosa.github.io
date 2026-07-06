@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Practical Statistics Cheat Sheet</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f8f7f3;
+      --paper: #fffefa;
+      --ink: #20211d;
+      --muted: #62665c;
+      --rule: #d7d3c8;
+      --accent: #9b4f2f;
+      --accent-dark: #64321f;
+      --code-bg: #f3f0e8;
+      --code-border: #d8d2c4;
+    }
+    * { box-sizing: border-box; }
+    html {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+      font-size: 18px;
+      line-height: 1.65;
+      text-rendering: optimizeLegibility;
+    }
+    body { margin: 0; }
+    article {
+      background: var(--paper);
+      border-left: 1px solid var(--rule);
+      border-right: 1px solid var(--rule);
+      margin: 0 auto;
+      max-width: 900px;
+      min-height: 100vh;
+      padding: clamp(28px, 6vw, 76px);
+    }
+    h1, h2, h3 {
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      letter-spacing: 0;
+      line-height: 1.15;
+    }
+    h1 {
+      border-bottom: 1px solid var(--rule);
+      font-size: clamp(2rem, 8vw, 4.5rem);
+      margin: 0 0 1rem;
+      padding-bottom: 1.25rem;
+    }
+    .dek {
+      color: var(--muted);
+      font-size: 1.18rem;
+      font-style: italic;
+      font-weight: 700;
+      margin: 0 0 2.5rem;
+    }
+    h2 {
+      color: var(--accent-dark);
+      font-size: clamp(1.45rem, 4vw, 2.15rem);
+      margin: 3rem 0 1rem;
+    }
+    h3 {
+      color: var(--accent-dark);
+      font-size: 1.15rem;
+      margin: 2rem 0 0.5rem;
+    }
+    p { margin: 1em 0; }
+    a { color: var(--accent-dark); text-underline-offset: 0.18em; }
+    a:visited { color: var(--accent); }
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--code-border);
+      border-left: 4px solid var(--accent);
+      font-size: 0.82rem;
+      line-height: 1.45;
+      margin: 1.25rem 0;
+      overflow-x: auto;
+      padding: 1rem;
+    }
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      white-space: pre;
+    }
+    strong { font-weight: 750; }
+    @media print {
+      html { background-color: white; }
+      body { background-color: transparent; color: black; font-size: 12pt; }
+      p, h2, h3 { orphans: 3; widows: 3; }
+      h2, h3 { page-break-after: avoid; }
+    }
+    @media (max-width: 600px) {
+      html { font-size: 16px; }
+      article { border: 0; }
+      pre { font-size: 0.78rem; }
+    }
+  </style>
+</head>
+<body>
+<article>
+<h1>Practical Statistics Cheat Sheet</h1>
+<p class="dek"><em>For Agent Operations, Retrieval Diagnostics, and Other Measured Systems</em></p>
+<p>Audience: readers who may not remember college statistics, or never
+took it. Math progressions are shown as valid Python code blocks.</p>
+<h2 id="how-to-read-this">How to Read This</h2>
+<p>Most operational metrics are not meaningful by themselves. A raw
+cosine score, latency value, success rate, or judge score becomes useful
+only after asking: compared to what baseline, distribution, cohort,
+source, query, or time window?</p>
+<p>This cheat sheet explains the basic statistical vocabulary needed to
+make those comparisons in a clear and auditable way. It is not a
+substitute for a statistics textbook. It is a bridge for people reading
+diagnostics, agent evaluations, retrieval reports, and operational
+monitoring dashboards.</p>
+<p><strong>Plain-English rule:</strong> A number becomes informative
+when you know where it sits inside a distribution and how much ordinary
+variation surrounds it.</p>
+<h3 id="observation-variable-sample-and-population">1. Observation,
+Variable, Sample, and Population</h3>
+<p><strong>What it means:</strong> An observation is one measured item.
+A variable is what you measure. A sample is the data you actually have.
+A population is the larger universe you care about.</p>
+<p><strong>Why it matters:</strong> In agent operations, one observation
+might be one query run, one citation check, one retrieval score, or one
+tool call. Confusion starts when people treat a small sample of runs as
+if it proves something about all future runs.</p>
+<p>Math progression in valid Python:</p>
+<pre><code class="language-python"># Observations: measured values from individual runs.
+latency_seconds = [2.1, 2.4, 2.0, 3.8, 2.2]
+
+# Sample size: how many observations we actually measured.
+n = len(latency_seconds)
+
+# Population: the broader process we are trying to understand.
+# In code, we usually only see a sample, not the full population.
+print(n)</code></pre>
+<p><strong>Follow-up reference:</strong> OpenIntro Statistics is a
+readable full-course reference for data structures, sampling,
+distributions, and inference.</p>
+<h3 id="distribution">2. Distribution</h3>
+<p><strong>What it means:</strong> A distribution describes how values
+are spread out. It tells you what is typical, what is rare, whether
+values cluster, whether there are long tails, and whether there are
+multiple groups mixed together.</p>
+<p><strong>Why it matters:</strong> For retrieval and agent diagnostics,
+the distribution matters more than an isolated score. If most cosine
+scores are tightly clustered, a small score difference may be
+meaningful. If scores are widely scattered, the same difference may be
+ordinary noise.</p>
+<p>Math progression in valid Python:</p>
+<pre><code class="language-python">from collections import Counter
+
+scores = [0.61, 0.62, 0.62, 0.64, 0.65, 0.65, 0.66, 0.71]
+
+# A simple binned distribution for inspection.
+bin_width = 0.02
+bins = [round(bin_width * int(score / bin_width), 2) for score in scores]
+counts_by_bin = Counter(bins)
+
+print(counts_by_bin)</code></pre>
+<p><strong>Follow-up reference:</strong> NIST describes histograms as a
+way to summarize a distribution, including its center, spread, skewness,
+outliers, and modes.</p>
+<h3 id="normal-distribution">3. Normal Distribution</h3>
+<p><strong>What it means:</strong> A normal distribution is the familiar
+bell-shaped distribution. It is symmetric around the mean. Many
+measurement errors, averages, and naturally aggregated processes are
+approximately normal, but many real-world systems are not.</p>
+<p><strong>Why it matters:</strong> If a score distribution is
+approximately normal, standard deviation and z-scores become easier to
+interpret. But do not assume normality just because a graph looks
+smooth. Check for skew, multiple peaks, heavy tails, and known process
+changes.</p>
+<p>Math progression in valid Python:</p>
+<pre><code class="language-python">from math import exp, pi, sqrt
+
+x = 1.0
+mean_value = 0.0
+standard_deviation = 1.0
+
+# Normal probability density at x.
+normal_density = (
+    1 / (standard_deviation * sqrt(2 * pi))
+    * exp(-0.5 * ((x - mean_value) / standard_deviation) ** 2)
+)
+
+print(normal_density)</code></pre>
+<p><strong>Follow-up reference:</strong> NIST calls the normal
+distribution probably the most important distribution in statistics for
+theoretical and practical reasons.</p>
+<h3 id="mean">4. Mean</h3>
+<p><strong>What it means:</strong> The mean is the arithmetic average.
+It is a measure of the center of a set of values.</p>
+<p><strong>Why it matters:</strong> The mean gives a baseline: average
+latency, average retrieval score, average evaluator score, average cost
+per run. The caveat is that outliers can pull it around. When the
+distribution is skewed, also look at the median.</p>
+<p>Math progression in valid Python:</p>
+<pre><code class="language-python">values = [10, 12, 13, 15, 100]
+
+mean_value = sum(values) / len(values)
+
+print(mean_value)</code></pre>
+<p><strong>Follow-up reference:</strong> NIST describes the mean as the
+value most commonly referred to as the average.</p>
+<h3 id="median-and-percentiles">5. Median and Percentiles</h3>
+<p><strong>What it means:</strong> The median is the middle value after
+sorting. Percentiles describe rank position. For example, the 95th
+percentile is the value below which about 95 percent of observations
+fall.</p>
+<p><strong>Why it matters:</strong> Percentiles are often better than
+averages for operational metrics. P95 latency, P99 cost, and
+top-one-percent retrieval scores reveal tail behavior that the mean
+hides.</p>
+<p>Math progression in valid Python:</p>
+<pre><code class="language-python">values = [10, 12, 13, 15, 100]
+values_sorted = sorted(values)
+n = len(values_sorted)
+
+median_value = values_sorted[n // 2]
+
+# Nearest-rank percentile function.
+def percentile_nearest_rank(values, percentile):
+    values_sorted = sorted(values)
+    rank = max(1, round(percentile / 100 * len(values_sorted)))
+    return values_sorted[rank - 1]
+
+p95 = percentile_nearest_rank(values, 95)
+
+print(median_value, p95)</code></pre>
+<p><strong>Follow-up reference:</strong> NIST treats median and other
+location measures as ways to describe the typical value of a
+distribution.</p>
+<h3 id="variance-and-standard-deviation">6. Variance and Standard
+Deviation</h3>
+<p><strong>What it means:</strong> Variance and standard deviation
+measure spread. Standard deviation is in the same units as the original
+data, which makes it easier to interpret.</p>
+<p><strong>Why it matters:</strong> Standard deviation tells you whether
+a score is ordinary or unusual relative to the usual variation of that
+metric. It is central to z-scores, control limits, and many
+anomaly-detection rules.</p>
+<p>Math progression in valid Python:</p>
+<pre><code class="language-python">values = [10, 12, 13, 15, 100]
+n = len(values)
+mean_value = sum(values) / n
+
+# Population variance and standard deviation.
+variance_population = sum((x - mean_value) ** 2 for x in values) / n
+standard_deviation_population = variance_population ** 0.5
+
+# Sample variance and standard deviation.
+variance_sample = sum((x - mean_value) ** 2 for x in values) / (n - 1)
+standard_deviation_sample = variance_sample ** 0.5
+
+print(standard_deviation_population, standard_deviation_sample)</code></pre>
+<p><strong>Follow-up reference:</strong> NIST describes variance and
+standard deviation as measures of scale, or variability, in the
+data.</p>
+<h3 id="standard-error-and-sampling-distribution">7. Standard Error and
+Sampling Distribution</h3>
+<p><strong>What it means:</strong> Standard deviation measures variation
+among observations. Standard error measures uncertainty in an estimate,
+such as the uncertainty around a sample mean.</p>
+<p><strong>Why it matters:</strong> This matters when you compare agent
+versions. A difference between two average scores may be meaningless if
+the estimate is noisy. More observations usually reduce standard
+error.</p>
+<p>Math progression in valid Python:</p>
+<pre><code class="language-python">values = [0.80, 0.82, 0.78, 0.81, 0.79]
+n = len(values)
+mean_value = sum(values) / n
+sample_standard_deviation = (
+    sum((x - mean_value) ** 2 for x in values) / (n - 1)
+) ** 0.5
+
+standard_error_of_mean = sample_standard_deviation / (n ** 0.5)
+
+print(standard_error_of_mean)</code></pre>
+<p><strong>Follow-up reference:</strong> NIST discusses confidence
+intervals and the effect of estimating standard deviation from limited
+data.</p>
+<h3 id="z-score">8. Z-Score</h3>
+<p><strong>What it means:</strong> A z-score says how many standard
+deviations a value is above or below the mean.</p>
+<p><strong>Why it matters:</strong> This is the core move for making raw
+metrics interpretable. A cosine score is not very meaningful by itself.
+A cosine score two standard deviations above that query’s score
+distribution is much more informative.</p>
+<p>Math progression in valid Python:</p>
+<pre><code class="language-python">scores = [0.61, 0.62, 0.62, 0.64, 0.65, 0.65, 0.66, 0.71]
+score_of_interest = 0.71
+
+mean_score = sum(scores) / len(scores)
+sample_standard_deviation = (
+    sum((x - mean_score) ** 2 for x in scores) / (len(scores) - 1)
+) ** 0.5
+
+z_score = (score_of_interest - mean_score) / sample_standard_deviation
+
+print(z_score)</code></pre>
+<p><strong>Follow-up reference:</strong> Khan Academy’s z-score material
+is a gentle follow-up reference; NIST’s normal distribution reference
+provides the formal distributional context.</p>
+<h3 id="p-value">9. P-Value</h3>
+<p><strong>What it means:</strong> A p-value is the probability,
+assuming a specified null model is true, of observing a result at least
+as extreme as the one observed. It is not the probability that the
+hypothesis is true.</p>
+<p><strong>Why it matters:</strong> P-values can help quantify whether
+an observed difference or anomaly is surprising under a baseline model.
+They are often misunderstood. They should not replace effect size,
+practical significance, or domain judgment.</p>
+<p>Math progression in valid Python:</p>
+<pre><code class="language-python">from math import erf, sqrt
+
+z_score = 2.1
+
+# Standard normal cumulative distribution function.
+def normal_cdf(z):
+    return 0.5 * (1 + erf(z / sqrt(2)))
+
+# Two-sided p-value for a z-test.
+p_value_two_sided = 2 * (1 - normal_cdf(abs(z_score)))
+
+print(p_value_two_sided)</code></pre>
+<p><strong>Follow-up reference:</strong> NIST defines p-values for
+hypothesis testing; the American Statistical Association statement
+explains common misinterpretations and cautions.</p>
+<h3 id="confidence-interval">10. Confidence Interval</h3>
+<p><strong>What it means:</strong> A confidence interval gives a range
+of plausible values for an unknown parameter, based on a sample and an
+assumed procedure.</p>
+<p><strong>Why it matters:</strong> A point estimate without uncertainty
+can be misleading. If agent A has an average pass rate of 82 percent and
+agent B has 84 percent, a confidence interval helps show whether that
+difference is likely meaningful or just sampling variation.</p>
+<p>Math progression in valid Python:</p>
+<pre><code class="language-python">values = [0.80, 0.82, 0.78, 0.81, 0.79]
+n = len(values)
+mean_value = sum(values) / n
+sample_standard_deviation = (
+    sum((x - mean_value) ** 2 for x in values) / (n - 1)
+) ** 0.5
+standard_error = sample_standard_deviation / (n ** 0.5)
+
+# Approximate 95 percent confidence interval using 1.96.
+z_critical_95 = 1.96
+lower = mean_value - z_critical_95 * standard_error
+upper = mean_value + z_critical_95 * standard_error
+
+print(lower, upper)</code></pre>
+<p><strong>Follow-up reference:</strong> NIST’s confidence interval
+discussion is a solid follow-up for interpretation and limits.</p>
+<h3 id="effect-size-and-practical-significance">11. Effect Size and
+Practical Significance</h3>
+<p><strong>What it means:</strong> Effect size asks how large a
+difference is, not just whether it is statistically detectable.</p>
+<p><strong>Why it matters:</strong> With enough data, tiny differences
+can become statistically significant. For agent operations, you often
+care more about whether the improvement matters: fewer unsupported
+citations, lower cost, lower latency, better retrieval stability, or
+fewer tool failures.</p>
+<p>Math progression in valid Python:</p>
+<pre><code class="language-python">old_scores = [0.72, 0.74, 0.73, 0.75, 0.71]
+new_scores = [0.78, 0.80, 0.79, 0.77, 0.81]
+
+mean_old = sum(old_scores) / len(old_scores)
+mean_new = sum(new_scores) / len(new_scores)
+
+sd_old = (sum((x - mean_old) ** 2 for x in old_scores) / (len(old_scores) - 1)) ** 0.5
+sd_new = (sum((x - mean_new) ** 2 for x in new_scores) / (len(new_scores) - 1)) ** 0.5
+
+pooled_sd = (((len(old_scores) - 1) * sd_old ** 2 + (len(new_scores) - 1) * sd_new ** 2) / (len(old_scores) + len(new_scores) - 2)) ** 0.5
+cohens_d = (mean_new - mean_old) / pooled_sd
+
+print(cohens_d)</code></pre>
+<p><strong>Follow-up reference:</strong> OpenIntro’s inference chapters
+are useful background for distinguishing statistical evidence from
+practical interpretation.</p>
+<h3 id="correlation">12. Correlation</h3>
+<p><strong>What it means:</strong> Correlation measures how two
+variables move together. Positive correlation means they tend to rise
+together. Negative correlation means one tends to rise when the other
+falls. Zero correlation means there is no linear relationship.</p>
+<p><strong>Why it matters:</strong> Correlation can reveal operational
+relationships: higher context length may correlate with latency, high
+hub scores may correlate with citation failures, or retrieval
+instability may correlate with answer repairs. Correlation does not
+prove causation.</p>
+<p>Math progression in valid Python:</p>
+<pre><code class="language-python">x_values = [1, 2, 3, 4, 5]
+y_values = [2, 3, 5, 7, 11]
+
+mean_x = sum(x_values) / len(x_values)
+mean_y = sum(y_values) / len(y_values)
+
+covariance = sum((x - mean_x) * (y - mean_y) for x, y in zip(x_values, y_values)) / (len(x_values) - 1)
+sd_x = (sum((x - mean_x) ** 2 for x in x_values) / (len(x_values) - 1)) ** 0.5
+sd_y = (sum((y - mean_y) ** 2 for y in y_values) / (len(y_values) - 1)) ** 0.5
+
+correlation = covariance / (sd_x * sd_y)
+
+print(correlation)</code></pre>
+<p><strong>Follow-up reference:</strong> OpenIntro Statistics provides
+beginner-friendly treatment of relationships between variables and
+regression.</p>
+<h3 id="multiple-comparisons-and-false-discovery-rate">13. Multiple
+Comparisons and False Discovery Rate</h3>
+<p><strong>What it means:</strong> When you test many things at once,
+some will look surprising by chance alone. Multiple-comparison methods
+adjust for this.</p>
+<p><strong>Why it matters:</strong> Agent operations often involve many
+metrics, many query cohorts, many agents, and many retrieval lanes. If
+you test all of them, some will appear anomalous even when nothing real
+changed. False discovery control helps avoid chasing noise.</p>
+<p>Math progression in valid Python:</p>
+<pre><code class="language-python">p_values = [0.001, 0.018, 0.021, 0.049, 0.20]
+false_discovery_rate = 0.05
+m = len(p_values)
+
+# Benjamini-Hochberg step-up thresholds.
+ranked = sorted((p, i + 1) for i, p in enumerate(p_values))
+thresholds = [false_discovery_rate * rank / m for rank in range(1, m + 1)]
+
+significant = []
+for rank, ((p_value, original_index), threshold) in enumerate(zip(ranked, thresholds), start=1):
+    if p_value &lt;= threshold:
+        significant.append((original_index, p_value, threshold))
+
+print(significant)</code></pre>
+<p><strong>Follow-up reference:</strong> Benjamini and Hochberg’s 1995
+paper introduced the false discovery rate approach to multiple
+testing.</p>
+<h3 id="control-limits-and-three-sigma-monitoring">14. Control Limits
+and Three-Sigma Monitoring</h3>
+<p><strong>What it means:</strong> Control limits use a baseline mean
+and spread to flag observations that fall outside expected process
+variation.</p>
+<p><strong>Why it matters:</strong> This is operationally powerful. If
+citation failures, tool retries, or retrieval insufficiency suddenly
+move beyond historical process limits, treat it as a possible system
+change rather than ordinary noise.</p>
+<p>Math progression in valid Python:</p>
+<pre><code class="language-python">historical_failure_rates = [0.02, 0.025, 0.018, 0.022, 0.019, 0.024]
+current_failure_rate = 0.071
+
+mean_rate = sum(historical_failure_rates) / len(historical_failure_rates)
+sd_rate = (
+    sum((x - mean_rate) ** 2 for x in historical_failure_rates) / (len(historical_failure_rates) - 1)
+) ** 0.5
+
+upper_control_limit = mean_rate + 3 * sd_rate
+lower_control_limit = mean_rate - 3 * sd_rate
+is_out_of_control = current_failure_rate &gt; upper_control_limit or current_failure_rate &lt; lower_control_limit
+
+print(upper_control_limit, lower_control_limit, is_out_of_control)</code></pre>
+<p><strong>Follow-up reference:</strong> NIST describes control charts
+as using a center line and upper and lower control limits to monitor
+process behavior over time.</p>
+<h3 id="putting-it-together-from-raw-metric-to-operational-signal">15.
+Putting It Together: From Raw Metric to Operational Signal</h3>
+<p><strong>What it means:</strong> The common pattern is to move from a
+raw value, to a position inside a relevant distribution, to a decision
+about whether it deserves attention.</p>
+<p><strong>Why it matters:</strong> This is the bridge from statistics
+to agent operations. A raw score should usually be contextualized by the
+query, source, cohort, time window, model version, and baseline
+process.</p>
+<p>Math progression in valid Python:</p>
+<pre><code class="language-python">query_scores = [0.61, 0.62, 0.62, 0.64, 0.65, 0.65, 0.66, 0.71]
+top_score = max(query_scores)
+
+mean_score = sum(query_scores) / len(query_scores)
+sd_score = (sum((x - mean_score) ** 2 for x in query_scores) / (len(query_scores) - 1)) ** 0.5
+z_score = (top_score - mean_score) / sd_score
+
+sorted_scores = sorted(query_scores)
+rank = sorted_scores.index(top_score) + 1
+percentile_rank = rank / len(sorted_scores)
+
+strong_tail_signal = z_score &gt;= 2.0 or percentile_rank &gt;= 0.95
+
+print(z_score, percentile_rank, strong_tail_signal)</code></pre>
+<p><strong>Follow-up reference:</strong> Use the reference materials
+below for the underlying statistics; the operational pattern is to make
+raw metrics distribution-aware before acting on them.</p>
+<h2 id="quick-practical-checklist">Quick Practical Checklist</h2>
+<ul>
+<li><p>Start with a plot or distribution summary, not a single
+number.</p></li>
+<li><p>Compare like with like: same query type, same corpus, same model
+version, same time window.</p></li>
+<li><p>Use mean and standard deviation only after checking whether the
+distribution is badly skewed or multi-modal.</p></li>
+<li><p>Use median and percentiles for latency, cost, and other
+long-tailed operational metrics.</p></li>
+<li><p>Use z-scores for query-local or cohort-local surprise, not as a
+universal truth score.</p></li>
+<li><p>Treat p-values as evidence against a specified null model, not as
+proof that a result is true.</p></li>
+<li><p>Track effect size and practical significance; a tiny improvement
+may not matter operationally.</p></li>
+<li><p>When many metrics are tested, use multiple-comparison discipline
+or expect false alarms.</p></li>
+<li><p>Use control limits to detect process breaks after parser, model,
+prompt, embedding, or source changes.</p></li>
+<li><p>Always combine statistical signals with domain constraints and
+evidence quality checks.</p></li>
+</ul>
+<h2 id="reference-materials-for-follow-up">Reference Materials for
+Follow-Up</h2>
+<p>These are good next stops for readers who want more formal grounding
+or examples. NIST is especially useful for engineering-style statistical
+methods; OpenIntro and Khan Academy are more pedagogical; the ASA
+statement is essential for avoiding p-value misunderstandings.</p>
+<ul>
+<li><p><a href="https://www.itl.nist.gov/div898/handbook/"><u>NIST/SEMATECH
+e-Handbook of Statistical Methods</u></a></p></li>
+<li><p><a href="https://www.itl.nist.gov/div898/handbook/eda/section3/histogra.htm"><u>NIST
+- Histogram: summarize a distribution</u></a></p></li>
+<li><p><a href="https://www.itl.nist.gov/div898/handbook/eda/section3/eda351.htm"><u>NIST
+- Measures of Location</u></a></p></li>
+<li><p><a href="https://www.itl.nist.gov/div898/handbook/eda/section3/eda356.htm"><u>NIST
+- Measures of Scale</u></a></p></li>
+<li><p><a href="https://www.itl.nist.gov/div898/handbook/eda/section3/eda3661.htm"><u>NIST
+- Normal Distribution</u></a></p></li>
+<li><p><a href="https://www.itl.nist.gov/div898/handbook/prc/section1/prc131.htm"><u>NIST
+- Critical Values and P Values</u></a></p></li>
+<li><p><a href="https://www.tandfonline.com/doi/full/10.1080/00031305.2016.1154108"><u>ASA
+Statement on Statistical Significance and P-Values</u></a></p></li>
+<li><p><a href="https://www.itl.nist.gov/div898/handbook/prc/section1/prc14.htm"><u>NIST
+- What are Confidence Intervals?</u></a></p></li>
+<li><p><a href="https://www.itl.nist.gov/div898/handbook/pmc/section3/pmc31.htm"><u>NIST
+- What are Control Charts?</u></a></p></li>
+<li><p><a href="https://www.openintro.org/book/os/"><u>OpenIntro
+Statistics</u></a></p></li>
+<li><p><a href="https://online.stat.psu.edu/"><u>Penn State Online
+Statistics</u></a></p></li>
+<li><p><a href="https://www.khanacademy.org/math/ap-statistics/density-curves-normal-distribution-ap"><u>Khan
+Academy - Percentiles, Z-Scores, and Normal
+Distribution</u></a></p></li>
+<li><p><a href="https://rss.onlinelibrary.wiley.com/doi/10.1111/j.2517-6161.1995.tb02031.x"><u>Benjamini
+&amp; Hochberg (1995), False Discovery Rate</u></a></p></li>
+</ul>
+<p>Publishing note: this document intentionally keeps equations and math
+progression inside Python code blocks so readers can copy, run, and
+adapt the examples.</p>
+
+</article>
+</body>
+</html>

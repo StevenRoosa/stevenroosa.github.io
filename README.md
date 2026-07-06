@@ -12,9 +12,16 @@ Current article:
 https://stevenroosa.github.io/semantic-trust-boundaries-for-agents/
 ```
 
+Additional article:
+
+```text
+https://stevenroosa.github.io/stats-cheat-sheet-agentic-controls/
+```
+
 ## Structure
 
 - `index.html` is the homepage.
 - `semantic-trust-boundaries-for-agents/` contains the current article and its diagram.
+- `stats-cheat-sheet-agentic-controls/` contains the statistics cheat sheet article.
 
 Additional pages can be added as new folders with their own `index.html` files.

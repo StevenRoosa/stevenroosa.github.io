@@ -100,6 +100,10 @@
       font-size: 0.95rem;
       margin-top: 0.35rem;
     }
+    .article-list {
+      display: grid;
+      gap: 1rem;
+    }
     .article-link {
       background: var(--paper);
       border: 1px solid var(--rule);
@@ -109,6 +113,9 @@
       grid-template-columns: minmax(0, 1fr) minmax(260px, 420px);
       padding: clamp(18px, 4vw, 32px);
       text-decoration: none;
+    }
+    .article-link.text-only {
+      display: block;
     }
     .article-link:hover h2,
     .article-link:focus h2 {
@@ -182,15 +189,25 @@
       </a>
     </div>
 
-    <p class="section-heading">Current Essay</p>
-    <a class="article-link" href="semantic-trust-boundaries-for-agents/">
-      <div>
-        <h2>Semantic Trust Boundaries for Agents</h2>
-        <p class="summary">A framework for treating admitted context as a governed boundary around the reasoning core of agentic AI systems.</p>
-        <p class="meta">Read the essay</p>
-      </div>
-      <img class="thumb" src="semantic-trust-boundaries-for-agents/semantic-hardening-safeguards.svg" alt="Diagram preview of context sources, semantic risks, trust boundary controls, and the reasoning core." />
-    </a>
+    <p class="section-heading">Articles</p>
+    <div class="article-list">
+      <a class="article-link" href="semantic-trust-boundaries-for-agents/">
+        <div>
+          <h2>Semantic Trust Boundaries for Agents</h2>
+          <p class="summary">A framework for treating admitted context as a governed boundary around the reasoning core of agentic AI systems.</p>
+          <p class="meta">Read the essay</p>
+        </div>
+        <img class="thumb" src="semantic-trust-boundaries-for-agents/semantic-hardening-safeguards.svg" alt="Diagram preview of context sources, semantic risks, trust boundary controls, and the reasoning core." />
+      </a>
+
+      <a class="article-link text-only" href="stats-cheat-sheet-agentic-controls/">
+        <div>
+          <h2>Stats Cheat Sheet for Agentic Controls</h2>
+          <p class="summary">A practical reference for using distributions, z-scores, p-values, confidence intervals, and control limits in agent operations.</p>
+          <p class="meta">Read the cheat sheet</p>
+        </div>
+      </a>
+    </div>
 
     <p class="placeholder">Additional pages can be added here as separate essays.</p>
   </main>
