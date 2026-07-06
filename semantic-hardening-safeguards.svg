@@ -1,0 +1,103 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 620" role="img" aria-labelledby="title desc">
+  <title id="title">Semantic hardening safeguards for agentic reasoning</title>
+  <desc id="desc">A left-to-right diagram showing context sources flowing into semantic risks, then semantic trust boundary controls, and finally the reasoning core. Deterministic offload branches from context sources before the AI reasoning core.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#2f5d62"/>
+    </marker>
+    <filter id="shadow" x="-15%" y="-15%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="8" stdDeviation="9" flood-color="#1f2522" flood-opacity="0.12"/>
+    </filter>
+    <style>
+      .bg { fill: #f8f7f3; }
+      .panel { fill: #fffefa; stroke: #d8d2c4; stroke-width: 2; }
+      .source { fill: #eaf2f0; stroke: #88aaa6; stroke-width: 2; }
+      .risk { fill: #fff0df; stroke: #d79a58; stroke-width: 2; }
+      .control { fill: #edf3ff; stroke: #7f9fcc; stroke-width: 2; }
+      .offload { fill: #eef4e9; stroke: #8eaa7d; stroke-width: 2; }
+      .core { fill: #2f5d62; }
+      .line { fill: none; stroke: #2f5d62; stroke-width: 4; marker-end: url(#arrow); }
+      .offload-line { fill: none; stroke: #789064; stroke-width: 3.5; marker-end: url(#arrow); }
+      .label { fill: #20211d; font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 23px; font-weight: 750; }
+      .small { fill: #20211d; font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 15px; font-weight: 650; }
+      .tiny { fill: #4f534a; font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 13px; font-weight: 600; }
+      .caption { fill: #62665c; font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 15px; }
+      .white { fill: #fffefa; }
+    </style>
+  </defs>
+
+  <rect class="bg" width="1280" height="620"/>
+  <text x="640" y="48" text-anchor="middle" class="label">Semantic hardening safeguards for agentic reasoning</text>
+  <text x="640" y="75" text-anchor="middle" class="caption">Sources -> risks -> deterministic controls -> reasoning core</text>
+
+  <rect x="44" y="120" width="230" height="342" rx="8" class="panel" filter="url(#shadow)"/>
+  <text x="159" y="157" text-anchor="middle" class="label">Context Sources</text>
+  <rect x="72" y="188" width="174" height="42" rx="7" class="source"/>
+  <text x="159" y="214" text-anchor="middle" class="small">Static prompts</text>
+  <rect x="72" y="242" width="174" height="42" rx="7" class="source"/>
+  <text x="159" y="268" text-anchor="middle" class="small">Retrieved docs</text>
+  <rect x="72" y="296" width="174" height="42" rx="7" class="source"/>
+  <text x="159" y="322" text-anchor="middle" class="small">Memory</text>
+  <rect x="72" y="350" width="174" height="42" rx="7" class="source"/>
+  <text x="159" y="376" text-anchor="middle" class="small">Prior AI outputs</text>
+  <rect x="72" y="404" width="174" height="42" rx="7" class="source"/>
+  <text x="159" y="430" text-anchor="middle" class="small">User data</text>
+
+  <rect x="70" y="514" width="178" height="58" rx="8" class="offload"/>
+  <text x="159" y="538" text-anchor="middle" class="small">Deterministic</text>
+  <text x="159" y="560" text-anchor="middle" class="small">offload</text>
+  <path class="offload-line" d="M 159 462 C 159 484, 159 491, 159 508"/>
+  <text x="279" y="546" text-anchor="start" class="caption">Use code for reliable computation or parsing</text>
+
+  <rect x="342" y="120" width="246" height="342" rx="8" class="panel" filter="url(#shadow)"/>
+  <text x="465" y="157" text-anchor="middle" class="label">Semantic Risks</text>
+  <rect x="370" y="184" width="190" height="34" rx="7" class="risk"/>
+  <text x="465" y="206" text-anchor="middle" class="tiny">Large context</text>
+  <rect x="370" y="226" width="190" height="34" rx="7" class="risk"/>
+  <text x="465" y="248" text-anchor="middle" class="tiny">Conflicting tasks</text>
+  <rect x="370" y="268" width="190" height="34" rx="7" class="risk"/>
+  <text x="465" y="290" text-anchor="middle" class="tiny">Instruction/data mixing</text>
+  <rect x="370" y="310" width="190" height="34" rx="7" class="risk"/>
+  <text x="465" y="332" text-anchor="middle" class="tiny">Complexity overload</text>
+  <rect x="370" y="352" width="190" height="34" rx="7" class="risk"/>
+  <text x="465" y="374" text-anchor="middle" class="tiny">Authority ambiguity</text>
+  <rect x="370" y="394" width="190" height="34" rx="7" class="risk"/>
+  <text x="465" y="416" text-anchor="middle" class="tiny">Compression loss</text>
+
+  <rect x="656" y="120" width="330" height="342" rx="8" class="panel" filter="url(#shadow)"/>
+  <text x="821" y="157" text-anchor="middle" class="label">Semantic Trust Boundary</text>
+  <text x="821" y="182" text-anchor="middle" class="caption">Deterministic admission controls</text>
+  <rect x="684" y="212" width="128" height="46" rx="7" class="control"/>
+  <text x="748" y="231" text-anchor="middle" class="tiny">Context budget</text>
+  <text x="748" y="249" text-anchor="middle" class="tiny">and chunking</text>
+  <rect x="830" y="212" width="128" height="46" rx="7" class="control"/>
+  <text x="894" y="231" text-anchor="middle" class="tiny">Task isolation</text>
+  <text x="894" y="249" text-anchor="middle" class="tiny">per call</text>
+  <rect x="684" y="274" width="128" height="46" rx="7" class="control"/>
+  <text x="748" y="293" text-anchor="middle" class="tiny">Instruction/data</text>
+  <text x="748" y="311" text-anchor="middle" class="tiny">separation</text>
+  <rect x="830" y="274" width="128" height="46" rx="7" class="control"/>
+  <text x="894" y="293" text-anchor="middle" class="tiny">Complexity</text>
+  <text x="894" y="311" text-anchor="middle" class="tiny">limits</text>
+  <rect x="684" y="336" width="128" height="46" rx="7" class="control"/>
+  <text x="748" y="355" text-anchor="middle" class="tiny">Authority</text>
+  <text x="748" y="373" text-anchor="middle" class="tiny">hierarchy</text>
+  <rect x="830" y="336" width="128" height="46" rx="7" class="control"/>
+  <text x="894" y="355" text-anchor="middle" class="tiny">Compression</text>
+  <text x="894" y="373" text-anchor="middle" class="tiny">retention</text>
+  <rect x="684" y="398" width="128" height="46" rx="7" class="control"/>
+  <text x="748" y="417" text-anchor="middle" class="tiny">Provenance and</text>
+  <text x="748" y="435" text-anchor="middle" class="tiny">step contracts</text>
+  <rect x="830" y="398" width="128" height="46" rx="7" class="control"/>
+  <text x="894" y="417" text-anchor="middle" class="tiny">Schema nuance</text>
+  <text x="894" y="435" text-anchor="middle" class="tiny">and confidence</text>
+
+  <circle cx="1140" cy="291" r="106" class="core" filter="url(#shadow)"/>
+  <text x="1140" y="264" text-anchor="middle" class="white label">Reasoning</text>
+  <text x="1140" y="294" text-anchor="middle" class="white label">Core</text>
+  <text x="1140" y="325" text-anchor="middle" class="white small">LLM endpoint</text>
+
+  <path class="line" d="M 274 291 C 296 291, 316 291, 336 291"/>
+  <path class="line" d="M 588 291 C 610 291, 630 291, 650 291"/>
+  <path class="line" d="M 986 291 C 1008 291, 1018 291, 1028 291"/>
+</svg>
