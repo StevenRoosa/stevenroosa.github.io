@@ -29,6 +29,6 @@ https://stevenroosa.github.io/kneedle-rag-top-k-cheat-sheet/
 - `index.html` is the homepage.
 - `semantic-trust-boundaries-for-agents/` contains the current article and its diagram.
 - `stats-cheat-sheet-agentic-controls/` contains the statistics cheat sheet article.
-- `kneedle-rag-top-k-cheat-sheet/` contains the Kneedle RAG top-k cheat sheet article.
+- `kneedle-rag-top-k-cheat-sheet/` contains the Kneedle cheat sheet for dynamic top-k in RAG.
 
 Additional pages can be added as new folders with their own `index.html` files.
