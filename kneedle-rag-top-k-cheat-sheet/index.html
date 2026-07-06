@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Kneedle for Dynamic Top-K in RAG</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f8f7f3;
+      --paper: #fffefa;
+      --ink: #20211d;
+      --muted: #62665c;
+      --rule: #d7d3c8;
+      --accent: #9b4f2f;
+      --accent-dark: #64321f;
+      --code-bg: #f3f0e8;
+      --code-border: #d8d2c4;
+    }
+    * { box-sizing: border-box; }
+    html {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+      font-size: 18px;
+      line-height: 1.65;
+      text-rendering: optimizeLegibility;
+    }
+    body { margin: 0; }
+    article {
+      background: var(--paper);
+      border-left: 1px solid var(--rule);
+      border-right: 1px solid var(--rule);
+      margin: 0 auto;
+      max-width: 900px;
+      min-height: 100vh;
+      padding: clamp(28px, 6vw, 76px);
+    }
+    h1, h2, h3 {
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      letter-spacing: 0;
+      line-height: 1.15;
+    }
+    h1 {
+      border-bottom: 1px solid var(--rule);
+      font-size: clamp(2rem, 8vw, 4.5rem);
+      margin: 0 0 1rem;
+      padding-bottom: 1.25rem;
+    }
+    .dek {
+      color: var(--muted);
+      font-size: 1.18rem;
+      font-style: italic;
+      font-weight: 700;
+      margin: 0 0 2.5rem;
+    }
+    h2 {
+      color: var(--accent-dark);
+      font-size: clamp(1.45rem, 4vw, 2.15rem);
+      margin: 3rem 0 1rem;
+    }
+    h3 {
+      color: var(--accent-dark);
+      font-size: 1.15rem;
+      margin: 2rem 0 0.5rem;
+    }
+    p { margin: 1em 0; }
+    a { color: var(--accent-dark); text-underline-offset: 0.18em; }
+    a:visited { color: var(--accent); }
+    ul, ol { padding-left: 1.7em; }
+    li { margin: 0.35rem 0; }
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--code-border);
+      border-left: 4px solid var(--accent);
+      font-size: 0.82rem;
+      line-height: 1.45;
+      margin: 1.25rem 0;
+      overflow-x: auto;
+      padding: 1rem;
+    }
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      white-space: pre;
+    }
+    strong { font-weight: 750; }
+    .visual {
+      border-bottom: 1px solid var(--rule);
+      border-top: 1px solid var(--rule);
+      margin: 2rem 0 2.5rem;
+      padding: 1.25rem 0;
+    }
+    .visual img {
+      background: var(--bg);
+      display: block;
+      height: auto;
+      width: 100%;
+    }
+    .visual figcaption {
+      color: var(--muted);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.9rem;
+      line-height: 1.45;
+      margin-top: 0.85rem;
+    }
+    .note {
+      border-left: 4px solid var(--accent);
+      color: var(--muted);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.95rem;
+      padding-left: 1rem;
+    }
+    @media print {
+      html { background-color: white; }
+      body { background-color: transparent; color: black; font-size: 12pt; }
+      p, h2, h3 { orphans: 3; widows: 3; }
+      h2, h3 { page-break-after: avoid; }
+    }
+    @media (max-width: 600px) {
+      html { font-size: 16px; }
+      article { border: 0; }
+      pre { font-size: 0.78rem; }
+    }
+  </style>
+</head>
+<body>
+<article>
+<h1>Kneedle for Dynamic Top-K in RAG</h1>
+<p class="dek"><em>A practical cheat sheet for detecting diminishing retrieval relevance and selecting candidate context with guardrails.</em></p>
+
+<h2>What This Is For</h2>
+<p>In retrieval-augmented generation, developers often choose a fixed
+<code>top_k</code>: retrieve five chunks, ten chunks, or twenty chunks.
+That can work, but it treats every query as if it has the same evidence
+shape. Some queries have one or two clearly relevant chunks. Others need
+a broader evidence set. Kneedle provides a deterministic way to inspect
+the retrieval score curve and estimate where additional chunks begin to
+add diminishing relevance.</p>
+<p><strong>Plain-English rule:</strong> retrieve broadly, sort by score,
+find the bend in the relevance curve, and use that bend as a proposed
+dynamic cutoff before final context packing.</p>
+<p class="note">Kneedle is not a relevance judge. It is a curve-shape
+heuristic. It should be bounded, validated, and combined with retrieval
+quality checks.</p>
+
+<h2>The Core Idea</h2>
+<p>Kneedle identifies a knee point in a curve: the place where the curve
+changes from steep improvement to a flatter region. In RAG, this is
+useful when sorted retrieval scores show a visible transition between
+materially better candidates and candidates that add little marginal
+value.</p>
+<p>There are two equivalent ways to visualize the problem:</p>
+<ul>
+<li><strong>Descending relevance:</strong> highest scores first, then a
+drop and flattening tail. Keep items before the knee.</li>
+<li><strong>Ascending relevance:</strong> lower scores first, then a
+rise that begins to flatten near the strongest candidates. Keep items to
+the right of the knee.</li>
+</ul>
+<p>This cheat sheet uses the second view in the diagram because it makes
+the knee read left-to-right as a transition from lower relevance to
+higher relevance.</p>
+
+<figure class="visual">
+<img src="kneedle-cosine-knee.svg" alt="Kneedle graph showing cosine similarity scores increasing from lower to higher values with a knee point marked." />
+<figcaption>For a left-to-right increasing score curve, the knee marks a
+candidate cutoff where stronger evidence begins. In production, this
+candidate cutoff should still be constrained by minimum and maximum
+<code>top_k</code>, token budget, diversity, source quality, and
+reranker checks.</figcaption>
+</figure>
+
+<h2>Basic Workflow</h2>
+<ol>
+<li>Retrieve more candidates than you expect to use, such as
+<code>top_30</code> or <code>top_50</code>.</li>
+<li>Score candidates using the retrieval or reranking score you trust
+most.</li>
+<li>Sort candidates by score.</li>
+<li>Run Kneedle on the score curve.</li>
+<li>Convert the knee location into a proposed dynamic
+<code>top_k</code>.</li>
+<li>Apply guardrails: <code>min_k</code>, <code>max_k</code>, token
+budget, diversity, source quality, and score floors.</li>
+<li>Validate against answer quality, citation support, recall, latency,
+and cost.</li>
+</ol>
+
+<h2>Python Sketch</h2>
+<p>This example sorts cosine scores from lower to higher, finds the knee
+on an increasing concave curve, and keeps the candidates at or above the
+knee.</p>
+<pre><code class="language-python">from kneed import KneeLocator
+
+candidates = [
+    {"id": "c1", "score": 0.42},
+    {"id": "c2", "score": 0.45},
+    {"id": "c3", "score": 0.49},
+    {"id": "c4", "score": 0.55},
+    {"id": "c5", "score": 0.63},
+    {"id": "c6", "score": 0.70},
+    {"id": "c7", "score": 0.76},
+    {"id": "c8", "score": 0.79},
+    {"id": "c9", "score": 0.81},
+    {"id": "c10", "score": 0.82},
+]
+
+ascending = sorted(candidates, key=lambda item: item["score"])
+scores = [item["score"] for item in ascending]
+ranks = list(range(1, len(scores) + 1))
+
+kneedle = KneeLocator(
+    ranks,
+    scores,
+    curve="concave",
+    direction="increasing",
+    S=1.0,
+)
+
+knee_rank = kneedle.knee
+
+if knee_rank is None:
+    selected = sorted(candidates, key=lambda item: item["score"], reverse=True)[:5]
+else:
+    # Convert 1-based knee rank into a zero-based list index.
+    knee_index = knee_rank - 1
+    selected = ascending[knee_index:]
+
+print([item["id"] for item in selected])</code></pre>
+
+<h2>Production Guardrail Pattern</h2>
+<p>The raw knee should rarely be used by itself. A practical production
+version usually clamps the result and then applies operational filters.</p>
+<pre><code class="language-python">from kneed import KneeLocator
+
+def choose_kneedle_top_k(candidates, min_k=3, max_k=12, fallback_k=5):
+    if not candidates:
+        return []
+
+    ascending = sorted(candidates, key=lambda item: item["score"])
+    scores = [item["score"] for item in ascending]
+    ranks = list(range(1, len(scores) + 1))
+
+    kneedle = KneeLocator(
+        ranks,
+        scores,
+        curve="concave",
+        direction="increasing",
+        S=1.0,
+    )
+
+    if kneedle.knee is None:
+        selected_count = fallback_k
+        descending = sorted(candidates, key=lambda item: item["score"], reverse=True)
+        return descending[:selected_count]
+
+    knee_index = kneedle.knee - 1
+    selected = ascending[knee_index:]
+
+    selected = sorted(selected, key=lambda item: item["score"], reverse=True)
+    selected_count = max(min_k, min(len(selected), max_k))
+
+    return selected[:selected_count]</code></pre>
+
+<h2>Where Kneedle Fits in a RAG Pipeline</h2>
+<pre><code class="language-text">broad retrieval
+-> optional hybrid retrieval or rank fusion
+-> reranking
+-> Kneedle on sorted relevance scores
+-> min/max/token guardrails
+-> diversity and source-quality filtering
+-> final context pack
+-> answer generation
+-> citation and support checks</code></pre>
+<p>Kneedle is most useful after broad retrieval and, where available,
+after reranking. Raw embedding similarity can be noisy. A stronger
+reranker may produce a score curve that better reflects actual
+candidate usefulness.</p>
+
+<h2>Important Caveats</h2>
+<ul>
+<li><strong>Kneedle sees shape, not truth.</strong> If your retriever
+confidently ranks irrelevant chunks, the knee can still look clean.</li>
+<li><strong>Flat curves are ambiguous.</strong> A flat score curve may
+mean the query is broad, the corpus is homogeneous, or the retriever is
+not separating relevance well.</li>
+<li><strong>Score scales may not travel.</strong> Cosine similarity is
+not always comparable across query types, embedding models, corpora, or
+retrieval systems.</li>
+<li><strong>Small candidate sets are unstable.</strong> Kneedle is more
+useful when you retrieve enough candidates to reveal curve shape.</li>
+<li><strong>Redundancy still matters.</strong> The top side of the knee
+may contain near-duplicate chunks. Add diversity filtering or MMR when
+needed.</li>
+<li><strong>Context budget still wins.</strong> Even good candidates may
+need to be summarized, compressed, deduplicated, or excluded.</li>
+</ul>
+
+<h2>Validation Checklist</h2>
+<p>Compare Kneedle-based dynamic selection against simpler baselines
+before trusting it in production.</p>
+<ul>
+<li>Fixed <code>top_3</code>, <code>top_5</code>, and
+<code>top_10</code>.</li>
+<li>Absolute score threshold.</li>
+<li>Percentile threshold within each query.</li>
+<li>Z-score threshold within each query or query cohort.</li>
+<li>Reranker score cutoff.</li>
+<li>MMR or other diversity-aware selection.</li>
+<li>Hybrid retrieval plus reciprocal rank fusion.</li>
+</ul>
+<p>Measure both retrieval and generation outcomes:</p>
+<ul>
+<li>answer correctness</li>
+<li>citation support</li>
+<li>evidence recall</li>
+<li>context precision</li>
+<li>unsupported-claim rate</li>
+<li>latency</li>
+<li>token cost</li>
+<li>failure rate by query type</li>
+</ul>
+
+<h2>Other Approaches to Consider</h2>
+<p><strong>Fixed <code>top_k</code>:</strong> simple, stable, and easy
+to reason about, but insensitive to query difficulty.</p>
+<p><strong>Score threshold:</strong> useful when scores are calibrated,
+but brittle when score distributions shift.</p>
+<p><strong>Percentile or z-score threshold:</strong> useful for
+query-local selection when absolute scores are hard to compare.</p>
+<p><strong>Reranker cutoff:</strong> often better than raw embedding
+similarity if the reranker is strong and well validated.</p>
+<p><strong>MMR:</strong> useful when the top-ranked candidates are
+redundant and the model needs diverse evidence.</p>
+<p><strong>Hybrid retrieval and reciprocal rank fusion:</strong> useful
+when lexical and semantic retrieval catch different relevant evidence,
+but the combined candidate set still needs narrowing.</p>
+<p><strong>LLM-based context selection:</strong> can help with nuanced
+evidence triage, but should usually come after deterministic narrowing
+because it adds cost, latency, and another failure surface.</p>
+
+<h2>References</h2>
+<ul>
+<li>Satopaa, V.; Albrecht, J.; Irwin, D.; and Raghavan, B. “Finding a
+Kneedle in a Haystack: Detecting Knee Points in System Behavior.”
+<a href="https://raghavan.usc.edu/papers/kneedle-simplex11.pdf">PDF</a>.</li>
+<li><code>kneed</code> Python package documentation.
+<a href="https://kneed.readthedocs.io/en/stable/">kneed.readthedocs.io</a>.</li>
+<li>Carbonell, J. and Goldstein, J. “The Use of MMR, Diversity-Based
+Reranking for Reordering Documents and Producing Summaries.”
+<a href="https://dl.acm.org/doi/10.1145/290941.291025">ACM Digital Library</a>.</li>
+</ul>
+
+<h2>Bottom Line</h2>
+<p>Kneedle is a useful deterministic heuristic for adaptive
+<code>top_k</code> selection in RAG. It helps identify where additional
+retrieved candidates begin to add diminishing relevance. It should not
+be treated as a relevance oracle. Use it with retrieval guardrails,
+reranking where possible, context-budget controls, and validation
+against downstream answer quality.</p>
+</article>
+</body>
+</html>
