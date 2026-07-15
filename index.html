@@ -66,9 +66,9 @@
     }
     .section-heading {
       color: var(--accent);
-      font-size: 0.85rem;
+      font-size: clamp(1.1rem, 2.4vw, 1.45rem);
       font-weight: 750;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.06em;
       margin: 2.5rem 0 1rem;
       text-transform: uppercase;
     }
@@ -149,6 +149,94 @@
       height: auto;
       width: 100%;
     }
+    .reading-grid {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .reading-item {
+      background: var(--paper);
+      border: 1px solid var(--rule);
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: 34px minmax(0, 1fr);
+      min-height: 100%;
+      padding: 1.2rem;
+    }
+    .book-spines {
+      align-self: stretch;
+      display: grid;
+      gap: 4px;
+      grid-template-columns: repeat(3, 1fr);
+      min-height: 126px;
+    }
+    .book-spines span {
+      background: var(--accent);
+      border: 1px solid rgba(32, 33, 29, 0.14);
+      display: block;
+    }
+    .book-spines span:nth-child(1) {
+      background: #2f5d62;
+    }
+    .book-spines span:nth-child(2) {
+      background: #9b4f2f;
+    }
+    .book-spines span:nth-child(3) {
+      background: #7f9fcc;
+    }
+    .reading-copy {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+    .reading-category {
+      color: var(--teal);
+      font-size: 0.78rem;
+      font-weight: 750;
+      letter-spacing: 0.08em;
+      margin: 0 0 0.75rem;
+      text-transform: uppercase;
+    }
+    .reading-item h3 {
+      font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+      font-size: clamp(1.3rem, 3vw, 1.75rem);
+      line-height: 1.08;
+      margin: 0;
+    }
+    .reading-item h3 a {
+      color: inherit;
+      text-decoration: none;
+      transition: color 160ms ease;
+    }
+    .reading-item h3 a:hover,
+    .reading-item h3 a:focus {
+      color: var(--accent);
+    }
+    .reading-author {
+      color: var(--muted);
+      margin: 0.5rem 0 0;
+    }
+    .book-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      margin-top: auto;
+      padding-top: 1.15rem;
+    }
+    .book-links a {
+      border: 1px solid var(--rule);
+      color: var(--accent);
+      font-size: 0.82rem;
+      font-weight: 700;
+      padding: 0.25rem 0.5rem;
+      text-decoration: none;
+    }
+    .book-links a:hover,
+    .book-links a:focus {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: var(--paper);
+    }
     .placeholder {
       border-top: 1px solid var(--rule);
       color: var(--muted);
@@ -158,8 +246,12 @@
     @media (max-width: 780px) {
       .intro,
       .article-link,
-      .link-grid {
+      .link-grid,
+      .reading-grid {
         grid-template-columns: 1fr;
+      }
+      .reading-item {
+        grid-template-columns: 28px minmax(0, 1fr);
       }
       .intro {
         background-image:
@@ -192,7 +284,7 @@
       </a>
     </div>
 
-    <p class="section-heading">Articles</p>
+    <p class="section-heading">Essays</p>
     <div class="article-list">
       <a class="article-link" href="semantic-trust-boundaries-for-agents/">
         <div>
@@ -203,6 +295,17 @@
         <img class="thumb" src="semantic-trust-boundaries-for-agents/semantic-hardening-safeguards.svg" alt="Diagram preview of context sources, semantic risks, trust boundary controls, and the reasoning core." />
       </a>
 
+      <a class="article-link text-only" href="runtime-inspection-for-ai-systems/">
+        <div>
+          <h2>The Limits of Runtime Inspection for AI Systems</h2>
+          <p class="summary">Why runtime inspection is useful as a sensor and checkpoint, but cannot serve as the primary security boundary for agentic systems.</p>
+          <p class="meta">Read the essay</p>
+        </div>
+      </a>
+    </div>
+
+    <p class="section-heading">Cheat Sheets</p>
+    <div class="article-list">
       <a class="article-link text-only" href="stats-cheat-sheet-agentic-controls/">
         <div>
           <h2>Stats Cheat Sheet for Agentic Controls</h2>
@@ -220,7 +323,50 @@
       </a>
     </div>
 
-    <p class="placeholder">Additional pages can be added here as separate essays.</p>
+    <p class="section-heading">Currently Reading</p>
+    <div class="reading-grid">
+      <section class="reading-item">
+        <div class="book-spines" aria-hidden="true"><span></span><span></span><span></span></div>
+        <div class="reading-copy">
+          <p class="reading-category">Nonfiction</p>
+          <h3><a href="https://global.oup.com/academic/product/complexity-9780199798100">Complexity: A Guided Tour</a></h3>
+          <p class="reading-author">Melanie Mitchell</p>
+          <div class="book-links" aria-label="Book links for Complexity: A Guided Tour">
+            <a href="https://global.oup.com/academic/product/complexity-9780199798100">Publisher</a>
+            <a href="https://www.barnesandnoble.com/s/Complexity%20A%20Guided%20Tour%20Melanie%20Mitchell">B&amp;N</a>
+            <a href="https://www.waterstones.com/books/search/term/Complexity%20A%20Guided%20Tour%20Melanie%20Mitchell">Waterstones</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="reading-item">
+        <div class="book-spines" aria-hidden="true"><span></span><span></span><span></span></div>
+        <div class="reading-copy">
+          <p class="reading-category">Nonfiction</p>
+          <h3><a href="https://search.worldcat.org/search?q=ti%3A%22Simulation%20in%20Python%20with%20SimPy%22%20au%3A%22Munro%20Craig%22">Simulation in Python with SimPy</a></h3>
+          <p class="reading-author">Munro Craig</p>
+          <div class="book-links" aria-label="Book links for Simulation in Python with SimPy">
+            <a href="https://search.worldcat.org/search?q=ti%3A%22Simulation%20in%20Python%20with%20SimPy%22%20au%3A%22Munro%20Craig%22">WorldCat</a>
+            <a href="https://www.barnesandnoble.com/s/Simulation%20in%20Python%20with%20SimPy%20Munro%20Craig">B&amp;N</a>
+            <a href="https://www.waterstones.com/books/search/term/Simulation%20in%20Python%20with%20SimPy%20Munro%20Craig">Waterstones</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="reading-item">
+        <div class="book-spines" aria-hidden="true"><span></span><span></span><span></span></div>
+        <div class="reading-copy">
+          <p class="reading-category">Fiction</p>
+          <h3><a href="https://www.hachettebookgroup.com/titles/adrian-tchaikovsky/children-of-memory/9780316466400/">Children of Memory</a></h3>
+          <p class="reading-author">Adrian Tchaikovsky</p>
+          <div class="book-links" aria-label="Book links for Children of Memory">
+            <a href="https://www.hachettebookgroup.com/titles/adrian-tchaikovsky/children-of-memory/9780316466400/">Publisher</a>
+            <a href="https://www.barnesandnoble.com/s/Children%20of%20Memory%20Adrian%20Tchaikovsky">B&amp;N</a>
+            <a href="https://www.waterstones.com/books/search/term/Children%20of%20Memory%20Adrian%20Tchaikovsky">Waterstones</a>
+          </div>
+        </div>
+      </section>
+    </div>
   </main>
 </body>
 </html>

@@ -30,6 +30,42 @@
     body {
       margin: 0;
     }
+    .article-banner {
+      background-image:
+        linear-gradient(180deg, rgba(8, 15, 18, 0) 72%, var(--bg) 100%),
+        linear-gradient(90deg, rgba(8, 15, 18, 0.88) 0%, rgba(8, 15, 18, 0.62) 42%, rgba(8, 15, 18, 0.08) 100%),
+        url("../github io landing.png");
+      background-position: center;
+      background-size: cover;
+      color: var(--paper);
+      display: flex;
+      min-height: clamp(300px, 48vw, 560px);
+      padding: clamp(36px, 8vw, 96px) clamp(28px, 6vw, 76px);
+    }
+    .article-banner h1 {
+      border-bottom: 0;
+      color: inherit;
+      margin: auto 0 0;
+      max-width: 760px;
+      padding-bottom: 0;
+      text-shadow: 0 2px 20px rgba(0, 0, 0, 0.35);
+    }
+    .article-kicker {
+      color: rgba(255, 254, 250, 0.78);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.82rem;
+      font-weight: 750;
+      letter-spacing: 0.08em;
+      margin: 0 0 0.85rem;
+      text-transform: uppercase;
+    }
+    .article-hero {
+      align-self: stretch;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      min-height: clamp(220px, 38vw, 440px);
+    }
     article {
       background: var(--paper);
       border-left: 1px solid var(--rule);
@@ -72,6 +108,12 @@
       font-style: italic;
       font-weight: 700;
       margin-top: 0.25rem;
+    }
+    .article-date {
+      color: var(--muted);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.92rem;
+      margin: 0 0 1.65rem;
     }
     .visual-overview {
       border-bottom: 1px solid var(--rule);
@@ -224,12 +266,22 @@
       article {
         border: 0;
       }
+      .article-banner {
+        min-height: 420px;
+      }
     }
   </style>
 </head>
 <body>
+<header class="article-banner">
+  <div class="article-hero">
+    <p class="article-kicker">Essay</p>
+    <h1>Semantic Controls to Harden Agentic Reasoning</h1>
+  </div>
+</header>
 <article>
-<h1>Semantic Controls to Harden Agentic Reasoning</h1>
+<p class="article-date">July 6, 2026</p>
+
 <figure class="visual-overview">
 <img src="semantic-hardening-safeguards.svg"
 alt="Diagram of semantic hardening safeguards around an LLM reasoning core." />
